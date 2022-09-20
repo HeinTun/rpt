@@ -1,0 +1,6 @@
+boto3
+s3fs
+osmnx
+shapely
+shapely.geometry
+plotly.express
