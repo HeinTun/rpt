@@ -95,8 +95,8 @@ def plot_roadlength(df):
     """
     takes df (from res_to_df) and create a bar plot fig.
     """
-    fig = px.bar(df, x="city", y="total_km", color="highway_tag", barmode="group",
-                  labels={"total_km": "Road Length (km)", "highway_tag": "Road Type", "city": "City"},
+    fig = px.bar(df, x="city", y="total_km", color="highway", barmode="group",
+                  labels={"total_km": "Road Length (km)", "highway": "Road Type", "city": "City"},
                   color_discrete_sequence=px.colors.diverging.curl)
     fig.update_layout(yaxis=dict(showgrid=False))
     return fig
@@ -121,7 +121,8 @@ def athena_road_aggregate(database,map_name):
     daylight = "daylight_osm_features"  #To occassionally update this file!
     query = """
     SELECT c.city,
-       tags [ 'highway' ] AS highway_tag,
+       tags [ 'highway' ] AS highway,
+       tags [ 'cycleway' ] AS cycleway,
        sum(linear_meters) / 1000 AS total_km
     FROM {0}.{1} AS d
 
@@ -133,8 +134,8 @@ def athena_road_aggregate(database,map_name):
             (min_lat + max_lat) / 2))
     WHERE release = 'v1.13'
         AND d.linear_meters > 0
-        AND tags[ 'highway'] IS NOT NULL
-    GROUP BY tags [ 'highway' ],c.city
-    ORDER BY c.city, highway_tag
+        AND (tags[ 'highway'] IS NOT NULL OR tags[ 'cycleway'] IS NOT NULL)
+    GROUP BY tags [ 'highway' ], tags [ 'cycleway'], c.city
+    ORDER BY c.city, highway, cycleway
     """.format(database, daylight, map_name)
     return query

@@ -47,7 +47,7 @@ with st.sidebar:
 
 
 
-aws_k = im_keys()
+aws_k = (st.secrets["AWS_ACCESS_KEY"], st.secrets["AWS_ACCESS_KEY_ID"], "us-east-1")
 # Boto and Athena/S3/S3F3
 athena_client = boto3.client("athena", aws_access_key_id=aws_k[0], aws_secret_access_key=aws_k[1], region_name=aws_k[2])
 s3_client = boto3.client("s3", aws_access_key_id=aws_k[0], aws_secret_access_key=aws_k[1], region_name=aws_k[2])
@@ -215,8 +215,9 @@ if st.session_state["disabled"]:
             st.session_state["t1"] = st.session_state["t"]          
 
         # this part uses session_state to avoid re-calculation.
-        t = st.session_state["t1"].pivot(index= "city", columns="highway_tag", values="total_km")
-        st.dataframe(t.style.format("{:.2f}"))
+        #t = st.session_state["t1"].pivot(index= "city", columns="highway", values="total_km")
+        t = st.session_state["t1"]
+        #st.dataframe(t.style.format("{:.2f}"))
 
         ## Download button
         csv_file = convert_df_to_csv(t) 
@@ -225,8 +226,8 @@ if st.session_state["disabled"]:
         ## Plotting
         df = st.session_state["t1"]
 
-        fig = px.bar(df, x="city", y="total_km", color="highway_tag", barmode="group",
-                  labels={"total_km": "Road Length (km)", "highway_tag": "Road Type", "city": "City"},
+        fig = px.bar(df, x="city", y="total_km", color="highway", barmode="group",
+                  labels={"total_km": "Road Length (km)", "highway": "Road Type", "city": "City"},
                   color_discrete_sequence=px.colors.diverging.curl)
         fig.update_layout(yaxis=dict(showgrid=False))
         st.plotly_chart(fig)
