@@ -41,7 +41,7 @@ with st.sidebar:
         """)
     
     st.sidebar.markdown("-----")
-    st.sidebar.text("Contact: Thet Hein Tun (thet.tun@wri.org)")
+    st.sidebar.text("Contact: Thet Hein Tun (thet.tun@wri.org); Adam Davidson (adam.davidson@wri.org)")
     
 
 
