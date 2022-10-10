@@ -19,7 +19,7 @@ import plotly.express as px
 
 st.set_page_config(layout="wide")
 
-st.title("Street Supply Tool")
+st.title("Reimagining Public Transport: A Street Supply Tool")
 
 with st.sidebar:
     
