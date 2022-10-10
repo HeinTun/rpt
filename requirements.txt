@@ -1,9 +1,7 @@
 boto3==1.24.64
 folium==0.12.1.post1
 geopandas==0.11.1
-numpy==1.20.3
 osmnx==1.2.2
-pandas==1.3.4
 plotly==5.10.0
 s3fs==2022.8.2
 secret==0.8
