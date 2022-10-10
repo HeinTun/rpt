@@ -13,7 +13,6 @@ import boto3
 import s3fs
 
 from helper import *
-from secret import im_keys
 
 import plotly.express as px
 
