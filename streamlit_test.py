@@ -41,8 +41,8 @@ with st.sidebar:
         """)
     
     st.sidebar.markdown("-----")
-    st.sidebar.text("Contact: ")
-    st.sidebar.text("Thet Hein Tun (thet.tun@wri.org);")
+    st.sidebar.text("Contact:")
+    st.sidebar.text("Thet Hein Tun (thet.tun@wri.org)")
     st.sidebar.text("Adam Davidson (adam.davidson@wri.org)")
     
 
@@ -120,7 +120,7 @@ if st.session_state.form1:
 
     with col4:
         st.markdown("###")
-        st.markdown('<p style="color: #FCD900">If you are <strong>READY</strong> to start the query process, please provide a unique name: </p>', True)
+        st.markdown('<p style="color: #FCD900";>If you are <strong>READY</strong> to start the query process, please provide a unique name of your choice: </p>', True)
     
     with col5: 
         st.markdown("###")
@@ -207,28 +207,37 @@ if st.session_state["disabled"] and st.session_state["qtime"] == "":
 if st.session_state["disabled"]:
     st.subheader("Road Lengths (km):")
 
-    with st.expander("Results"):
+    with st.expander("RESULTS"):
 
         st.session_state.qtime
 
         if st.session_state["disabled"] and st.session_state["t"].empty:
-            st.session_state["t"] = res_to_df(results)
+            st.session_state["t"] = categorize_df(res_to_df(results))
             st.session_state["t1"] = st.session_state["t"]          
 
         # this part uses session_state to avoid re-calculation.
-        #t = st.session_state["t1"].pivot(index= "city", columns="highway", values="total_km")
-        t = st.session_state["t1"]
-        #st.dataframe(t.style.format("{:.2f}"))
+        t = st.session_state["t1"]  # raw df without summary
+        v_df1, v_df2 = summarize_categories(city_name, t)
+        st.dataframe(v_df1.style.set_precision(2))
 
         ## Download button
         csv_file = convert_df_to_csv(t) 
-        st.download_button(label="Download CSV", data = csv_file, file_name= "query.csv", mime="text/csv", on_click=form_callback)
+        st.write("")
+        st.download_button(label="Download CSV for raw data", data = csv_file, file_name= map_name + "_query.csv", mime="text/csv", on_click=form_callback)
 
         ## Plotting
-        df = st.session_state["t1"]
+        _, df = summarize_categories(city_name,st.session_state["t1"])
 
-        fig = px.bar(df, x="city", y="total_km", color="highway", barmode="group",
-                  labels={"total_km": "Road Length (km)", "highway": "Road Type", "city": "City"},
-                  color_discrete_sequence=px.colors.diverging.curl)
+        fig = px.bar(df, x="City", y="value", color="variable", barmode="group",
+                  labels={"value": "% of Total Street Length", "variable": "Category", "City": "City"},
+                  color_discrete_sequence=[ "#C51F24",'#F0AB00', "#003F6A"])
         fig.update_layout(yaxis=dict(showgrid=False))
         st.plotly_chart(fig)
+  
+        st.markdown("-----")
+        st.markdown("""<p style="font-family:monospace;color: #9B9B9B; font-size: 11px"> 
+                'Auto-dominant' includes highway tags of 'motorway', 'motorway_link', 'primary', 'primary_link', 'secondary' and 'secondary_link'. 
+                'Cycle' includes highway tag of 'cycleway', and cycleway tags of 'track', 'opposite_track', 'lane', 'opposite_lane', 'buffered_lane', 'shared_lane', 'share_busway' and 'sidepath'. 
+                'Livable' streets include highway tags of 'footway', 'living_street', 'pedestrian', 'busway', and 'busy_guideway'; and cycleway tags of 'track', 'opposite_track', 'share_busway' and 'separate'.
+                Please refer to <a href="https://wiki.openstreetmap.org/wiki/Key:highway">OSM tags</a> for more information.
+                </p>""", True)

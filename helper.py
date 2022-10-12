@@ -68,7 +68,7 @@ def get_shape(m,radius=10000): #m is a dataframe with LONG and LAT INFO, #radius
 def res_to_df(results):
     """
     takes query output (for aggregated highway tags) results from athena, and
-    output highway df.
+    output highway and cycleway df.
     """
     columns = [col["Label"] for col in results["ResultSet"]["ResultSetMetadata"]["ColumnInfo"]]
     listed_res = []
@@ -80,26 +80,66 @@ def res_to_df(results):
             except:
                 values.append(list(""))
         listed_res.append(dict(zip(columns,values)))
+
     k = pd.DataFrame(listed_res)
+    if "cycleway" in columns:
+        k["cycleway"] = k ["cycleway"].apply(str)
+    k["highway"] = k["highway"].apply(str)
     k["total_km"] = pd.to_numeric(k["total_km"])
     return k
 
+@st.cache
+def categorize_df(k):
+    """
+    uses res_to_df (dataframe) and categorize road types based on definition.
+    return k (dataframe) with three additional columns (based on category definitions.)
+    """
+    auto_dominant = ["motorway", "motorway_link", "primary", "primary_link", "secondary", "secondary_link"]
+    cycleways     = {"highway": ["cycleway"],
+                     "cycleway": ["track", "opposite_track", "lane", "opposite_lane", "buffered_lane", "crossing",
+                                  "shared_lane", "share_busway", "sidepath"]}
+    livable_streets = {"highway": ["footway", "living_street", "pedestrian", "busway", "bus_guideway"],
+                 "cycleway": ["track", "opposite_track", "share_busway", "separate"]} #protected_cycleway
+
+    k["auto_dominant"] = k["highway"].isin(auto_dominant)
+    k["cycle_TF"] = k["highway"].isin(cycleways["highway"]) | k["cycleway"].isin(cycleways["cycleway"])
+    k["livable"] = k["highway"].isin(livable_streets["highway"]) | k["cycleway"].isin(livable_streets["cycleway"])
+    return k
+
+@st.cache
+def summarize_categories(city_name, t):
+    """returns 2 versions of df for three road categories"""
+    total_pc, auto_pc, cycle_pc, l_pc = [], [], [], []
+    pcent_auto, pcent_cycle, pcent_livable = [], [],[]
+
+    for i in city_name:
+        k = t[t["city"]==i]
+    
+        auto = k[k["auto_dominant"]==True]["total_km"].sum()
+        cycle = k[k["cycle_TF"]==True]["total_km"].sum()
+        livable = k[k["livable"]==True]["total_km"].sum()
+        total = k["total_km"].sum()
+    
+        percent_auto, percent_cycle, percent_livable = round(auto/total *100,2), round(cycle/total*100,2), round(livable/total*100,2)
+    
+        total_pc.append(total)
+        auto_pc.append(auto)
+        cycle_pc.append(cycle)
+        l_pc.append(livable)
+        pcent_auto.append(percent_auto)
+        pcent_cycle.append(percent_cycle)
+        pcent_livable.append(percent_livable)
+
+    v_df1 = pd.DataFrame({"City": city_name, "Total street length (km)":total_pc,"Auto-dominant (km)": auto_pc, 
+                          "Cycle (km)": cycle_pc, "Livable (km)": l_pc})
+    v_df2 = pd.DataFrame({"City": city_name, "Auto-dominant (%)": pcent_auto, "Cycle (%)": pcent_cycle, "Livable (%)": pcent_livable})
+    v_df2 = pd.melt(v_df2, id_vars=["City"], value_vars=v_df2.columns[1:])
+    return (v_df1, v_df2)
 
 @st.cache
 def convert_df_to_csv(df):
     return df.to_csv().encode("utf-8")
 
-
-@st.cache
-def plot_roadlength(df):
-    """
-    takes df (from res_to_df) and create a bar plot fig.
-    """
-    fig = px.bar(df, x="city", y="total_km", color="highway", barmode="group",
-                  labels={"total_km": "Road Length (km)", "highway": "Road Type", "city": "City"},
-                  color_discrete_sequence=px.colors.diverging.curl)
-    fig.update_layout(yaxis=dict(showgrid=False))
-    return fig
 
 @st.cache
 def a_create_table(database, map_name, loc): #assume the file is .tsv
