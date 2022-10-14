@@ -98,7 +98,7 @@ def categorize_df(k):
     cycleways     = {"highway": ["cycleway"],
                      "cycleway": ["track", "opposite_track", "lane", "opposite_lane", "buffered_lane", "crossing",
                                   "shared_lane", "share_busway", "sidepath"]}
-    livable_streets = {"highway": ["footway", "living_street", "pedestrian", "busway", "bus_guideway"],
+    livable_streets = {"highway": ["living_street", "pedestrian", "busway", "bus_guideway"],
                  "cycleway": ["track", "opposite_track", "share_busway", "separate"]} #protected_cycleway
 
     k["auto_dominant"] = k["highway"].isin(auto_dominant)
