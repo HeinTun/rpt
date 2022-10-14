@@ -238,6 +238,6 @@ if st.session_state["disabled"]:
         st.markdown("""<p style="font-family:monospace;color: #9B9B9B; font-size: 11px"> 
                 'Auto-dominant' includes highway tags of 'motorway', 'motorway_link', 'primary', 'primary_link', 'secondary' and 'secondary_link'. 
                 'Cycle' includes highway tag of 'cycleway', and cycleway tags of 'track', 'opposite_track', 'lane', 'opposite_lane', 'buffered_lane', 'shared_lane', 'share_busway' and 'sidepath'. 
-                'Livable' streets include highway tags of 'footway', 'living_street', 'pedestrian', 'busway', and 'busy_guideway'; and cycleway tags of 'track', 'opposite_track', 'share_busway' and 'separate'.
+                'Livable' streets include highway tags of 'living_street', 'pedestrian', 'busway', and 'busy_guideway'; and cycleway tags of 'track', 'opposite_track', 'share_busway' and 'separate'.
                 Please refer to <a href="https://wiki.openstreetmap.org/wiki/Key:highway">OSM tags</a> for more information.
                 </p>""", True)
