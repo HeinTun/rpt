@@ -209,8 +209,8 @@ if st.session_state["disabled"]:
     
     with st.expander("DEFINITIONS:"):
         st.markdown( """- <i><b>Auto-Dominant</b></i> streets (A) are the main roads that automobiles use to go medium to long distances and/or at high speeds. E.g., motorways, primary roads, secondary roads, and roads with speed limits > 45mph.""", True)
-        st.markdown( """-  <i><b>Livable Features</b></i> (B) are <i>quality</i> right-of-way treatments that are known to encourage sustainable mobility via good protection and non-auto priority. While different from auto-oriented design these features can exist along-side auto-dominant roads. E.g., protected cycle infrastructure, busways, pedestrian (priority) streets, pathways.""", True)
-        st.markdown( """-  <i><b>Cycle</b></i> roads (C) are any designated cycle path, lane, or route whether or not it shares the space with other road users. Protected paths/routes are also marked as Liveable Features (B).""", True)
+        st.markdown( """- <i><b>Livable</b></i> features (B) are <i>quality</i> right-of-way treatments that are known to encourage sustainable mobility via good protection and non-auto priority. While different from auto-oriented design these features can exist along-side auto-dominant roads. E.g., protected cycle infrastructure, busways, pedestrian (priority) streets, pathways.""", True)
+        st.markdown( """- <i><b>Cycle</b></i> roads (C) are any designated cycle path, lane, or route whether or not it shares the space with other road users. Protected paths/routes are also marked as <i><b>Livable</b></i> features (B).""", True)
 
     with st.expander("RESULTS:"):
 
