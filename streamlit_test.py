@@ -198,7 +198,7 @@ if st.session_state["disabled"] and st.session_state["qtime"] == "":
                 raise err
     t_d = str(datetime.datetime.now()-s).split(":")
     
-    st.session_state.qtime = "Your query took {0} minute(s) and {1} seconds. :sparkles:".format(t_d[1], t_d[2][:6])
+    st.session_state.qtime = "Your query took {0} minute(s) and {1} seconds. :sparkles:".format(t_d[1], t_d[2][:5])
     #results["ResponseMetadata"]["HTTPStatusCode"]
 
 
@@ -206,8 +206,13 @@ if st.session_state["disabled"] and st.session_state["qtime"] == "":
 ## STEP 6: DISPLAY/SAVE QUERY RESULTS
 if st.session_state["disabled"]:
     st.subheader("Road Lengths (km):")
+    
+    with st.expander("DEFINITIONS:"):
+        st.markdown( """- <i><b>Auto-Dominant</b></i> streets (A) are the main roads that automobiles use to go medium to long distances and/or at high speeds. E.g., motorways, primary roads, secondary roads, and roads with speed limits > 45mph.""", True)
+        st.markdown( """-  <i><b>Livable Features</b></i> (B) are <i>quality</i> right-of-way treatments that are known to encourage sustainable mobility via good protection and non-auto priority. While different from auto-oriented design these features can exist along-side auto-dominant roads. E.g., protected cycle infrastructure, busways, pedestrian (priority) streets, pathways.""", True)
+        st.markdown( """-  <i><b>Cycle</b></i> roads (C) are any designated cycle path, lane, or route whether or not it shares the space with other road users. Protected paths/routes are also marked as Liveable Features (B).""", True)
 
-    with st.expander("RESULTS"):
+    with st.expander("RESULTS:"):
 
         st.session_state.qtime
 
@@ -218,7 +223,7 @@ if st.session_state["disabled"]:
         # this part uses session_state to avoid re-calculation.
         t = st.session_state["t1"]  # raw df without summary
         v_df1, v_df2 = summarize_categories(city_name, t)
-        st.dataframe(v_df1.style.set_precision(2))
+        st.dataframe(v_df1.style.format(precision=2))
 
         ## Download button
         csv_file = convert_df_to_csv(t) 
